@@ -19,9 +19,18 @@ pub struct Request {
 }
 
 impl Request {
-    pub fn new(client: reqwest::Client) -> Self {
-        Request {
-            client
+    pub fn new(user_agent: &str, headers: &[(&'static str, &'static str)]) -> Self {
+        let default_headers = Self::headers(headers);
+        let client_builder = reqwest::Client::builder()
+            .user_agent(user_agent)
+            .default_headers(default_headers)
+            .build();
+        if let Ok(client) = client_builder {
+            Request {
+                client
+            }
+        } else {
+            panic!("Failed to create a Client");
         }
     }
 
